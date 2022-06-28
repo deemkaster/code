@@ -1,0 +1,165 @@
+<script type='text/javascript' src='/form/js/jquery.maskedinput.min.js'></script>
+<script>
+$(document).ready(function(){
+	$("input[name=phoneWinTimer]").mask("+7 (999) 999-9999");
+	if (timerWindow == undefined) {
+		var timerWindow = setInterval(() => checkWindow(),1000);	
+	}
+	$(document).mousemove(function(event){
+		var x = event.pageX;
+		var y = event.pageY;
+		//console.log('x = ' + x);
+		//console.log('y = ' + y);
+		var flag_window_show = getCookie('flag_window_show');
+		console.log('flag_window_show = ' + flag_window_show);
+		if (flag_window_show == 'true') {		
+			clearInterval(timerWindow);
+			return;
+		}
+		if (x > document.documentElement.clientWidth - 400) {
+			if (y < 30) {
+				console.log('x = ' + x);
+				console.log('y = ' + y);
+				console.log('show1 window close');
+				setTimeout(() => ShowWindow('WinTimer')	,0);
+				setCookie('flag_window_show', true, {secure: true, 'max-age': 360000});			
+			}
+		}
+		if (x > document.documentElement.clientWidth - 30) {
+			if (y < 400) {
+				console.log('x = ' + x);
+				console.log('y = ' + y);
+				/*x = 1827 y = 378*/
+				console.log('show2 window close');
+				setTimeout(() => ShowWindow('WinTimer')	,0);
+				setCookie('flag_window_show', true, {secure: true, 'max-age': 360000});			
+			}
+		}
+	});
+})
+function checkWindow() {
+	var rTime = 50;
+	var tNow = parseInt(new Date().getTime() / 1000);// ms/1000
+	console.log('tnow: ' + tNow)
+	var timer = parseInt(tNow + rTime);
+	console.log('timer: ' + timer)
+	var cookieTime = getCookie('timeWindows');
+	console.log('cookieTime: ' + cookieTime)
+	var flag_window_show = getCookie('flag_window_show');
+	if (flag_window_show == 'true') {
+		clearInterval(timerWindow);
+		return;
+	}
+	console.log('delta:' + (cookieTime - tNow) );
+	console.log('flag_window_show = ' + flag_window_show);
+	if (cookieTime - tNow < 0 || cookieTime == undefined) {
+		//console.log('if 1' );
+		setCookie('timeWindows', timer, {secure: true, 'max-age': 3600});
+	}
+	if (cookieTime - tNow < 0 && cookieTime != undefined && flag_window_show != 'true') {
+		//console.log('if 2' );
+		setTimeout(() => ShowWindow("WinTimer")	,0);
+		setCookie('flag_window_show', true, {secure: true, 'max-age': 360000});
+	}
+};
+function setCookie(name, value, options = {}) {
+	options = {
+		path: '/',
+	};
+	if (options.expires instanceof Date) {
+		options.expires = options.expires.toUTCString();
+	}
+	let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+	for (let optionKey in options) {
+		updatedCookie += "; " + optionKey;
+		let optionValue = options[optionKey];
+		if (optionValue !== true) {
+			updatedCookie += "=" + optionValue;
+		}
+	}
+	document.cookie = updatedCookie;
+}
+function getCookie(name) {
+	let matches = document.cookie.match(new RegExp(
+		"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+	));
+	return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+function sendWinTimer() {
+	$(".formError").css("visibility", "hidden");
+	var data = {};
+	$("#dataTimer").find("input, textearea, select").each(function() {									
+		data[this.name] = $(this).val();
+	});
+	$("#DivResultTimer").html('<center><img src="/form/img/loader.gif" class="loaderImg"/></center>');
+	$(".formError").css( "display", "none");
+	$.ajax({								
+		url: "/form/mail.php",
+		method: "POST",
+		dataType: "html",
+		data: data, 
+		success: function(data){
+			var obj = jQuery.parseJSON(data);										
+			if (obj.error == 1) {
+				
+				//console.log(obj.id);
+				$("#phoneWinTimerError").css("display", "block");
+				$("#phoneWinTimerError").css("visibility", "visible");
+				$("#phoneWinTimerError").html(obj.text);
+				$("#DivResultTimer").html("");											
+			}
+			else  {			
+				//ym(86807565,'reachGoal','specorder');
+				ym(88278879,'reachGoal','discount');		
+				$("#DivResultTimer").html(obj.text);
+				$("#DivInputTimer").css( "display", "none");
+			}
+		},
+		error: function (jqXHR, exception) {
+			$("#DivResultTimer").html(exception.text);
+			$("#DivInputTimer").css( "display", "none");
+		}
+	});
+}
+function ShowWindow(name) {
+	$(".formError").css("visibility", "hidden");
+	$(".formError").css( "display", "none");
+	////console.log('id='+name+'Box');
+	document.getElementById(name+'Box').style.display='table';
+	document.getElementById(name+'Fon').style.display='block';
+	document.getElementById(name+'BoxCont').style.display='inline-block';
+}
+function CloseWindow(name) {
+	document.getElementById(name+'Box').style.display='none';
+	document.getElementById(name+'Fon').style.display='none';
+	document.getElementById(name+'BoxCont').QuestBoxCont.style.display='none';	
+}
+</script>
+<link rel="stylesheet" type="text/css" href="/form/css/form.css">
+<div class="window_fon" onclick="CloseWindow('WinTimer');" id="WinTimerFon"></div>
+<div class="window_box izv"  id="WinTimerBox">
+	
+	<div class="window-cont" id="WinTimerBoxCont">
+		<div class="cont-spec-order">
+			<div class="spec-order-img"><img src="/form/img/spec-order-img.png" alt=""></div>
+			<div onclick="CloseWindow('WinTimer');" align="right" class="close-x"><img src="/form/img/close_box.gif" border=0></div>	
+		</div>
+		
+		
+		<div class="dop-form-contact">
+			<div class="cont-tab-col-cont form-contact-col-2"> 
+			<form method="POST" name="sendForm" id="dataTimer">
+			<input type="hidden" name="act" value="send">
+				<h2>Предложим индивидуальную скидку на 1-ю перевозку</h2>
+				<div id="DivInputTimer">
+					<input name="fio" placeholder="Ваше имя*" type="text" class="form-number-one"> 
+					<input name="phoneWinTimer" placeholder="Контактный телефон*" type="text" class="form-number-one phone" required>
+					<div id="phoneWinTimerError" class="formError"></div>
+					<button name="" type="button" onclick="sendWinTimer()" class="button-callback">Получить скидку</button>
+				</div>
+				<div id="DivResultTimer"></div>
+			 </div>
+			</form>
+		</div>
+	</div>		
+</div>
